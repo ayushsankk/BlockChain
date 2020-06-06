@@ -61,12 +61,12 @@ class Blockchain {
      * Note: the symbol `_` in the method name indicates in the javascript convention 
      * that this method is a private method. 
      */
-    _addBlock(block) {
+    async _addBlock(block) {
         let self = this;
         return new Promise(async (resolve, reject) => {
            try {
-                let height = self.getChainHeight();
-                height.then(height => block.height = height + 1);
+                let height = await self.getChainHeight();
+                block.height = height + 1;
                 if(self.height === -1) {
                     block.previousBlockHash = null;
                 } else {
@@ -182,12 +182,12 @@ class Blockchain {
      * Remember the star should be returned decoded.
      * @param {*} address 
      */
-    getStarsByWalletAddress (address) {
+    async getStarsByWalletAddress (address) {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
             self.chain.forEach((b) => {
-                let data = b.getBData();
+                let data = await b.getBData();
                 if(data){
                     if (data.owner === address){
                         stars.push(data);
@@ -204,15 +204,20 @@ class Blockchain {
      * 1. You should validate each block using `validateBlock`
      * 2. Each Block should check the with the previousBlockHash
      */
-    validateChain() {
+    async validateChain() {
         let self = this;
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
             try {
                 for (const block of self.chain) {
-                    let validating = self.validateBlock(block);
-                    if(validating !== null) {
-                        errorlog.push(validating)
+                    let isValid = await block.validateBlock();
+                    if(isValid) {
+                        let validating = self.validateBlock(block);
+                        if(validating !== null) {
+                            errorlog.push(validating)
+                        }
+                    } else {
+                        errorLog.push('Invalid block at height' + block.height);
                     }
                 }
                 resolve(errorLog);
@@ -222,8 +227,8 @@ class Blockchain {
         });
     }
 
-    validateBlock(block) {
-        let previousBlock = this.getBlockByHeight(block.height - 1);
+    async validateBlock(block) {
+        let previousBlock = await this.getBlockByHeight(block.height - 1);
         if(this.previousBlock.hash !== block.previousBlockHash && block.previousBlockHash !== null) {
             return 'Chain broken at height' + block.height;
         }
