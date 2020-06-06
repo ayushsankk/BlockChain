@@ -1,2 +1,2 @@
 # BlockChain
-Projects related to BLockChain
+My private blockChain where the users can create digital asset and claim ownership of the same
