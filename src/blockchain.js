@@ -215,7 +215,7 @@ class Blockchain {
                     if(isValid) {
                         let validating = self.validateBlock(block);
                         if(validating !== null) {
-                            errorlog.push(validating)
+                            errorLog.push(validating)
                         }
                     } else {
                         errorLog.push('Invalid block at height' + block.height);
