@@ -77,6 +77,8 @@ class Block {
         // Resolve with the data if the object isn't the Genesis block
         if (this.height > 0) {
             resolve(obj);
+        } else {
+            resolve(false);
         }
         })
     }

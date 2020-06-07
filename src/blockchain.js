@@ -94,7 +94,8 @@ class Blockchain {
      */
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
-            let message = address + '${new Date().getTime().toString().slice(0,-3)}:starRegistry';
+            let time = parseInt(new Date().getTime().toString().slice(0, -3));
+            let message = address + time + "starRegistry";
             resolve(message);
         });
     }
@@ -182,12 +183,12 @@ class Blockchain {
      * Remember the star should be returned decoded.
      * @param {*} address 
      */
-    async getStarsByWalletAddress (address) {
+    getStarsByWalletAddress (address) {
         let self = this;
         let stars = [];
         return new Promise((resolve, reject) => {
             self.chain.forEach((b) => {
-                let data = await b.getBData();
+                let data = b.getBData();
                 if(data){
                     if (data.owner === address){
                         stars.push(data);
@@ -210,7 +211,7 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             try {
                 for (const block of self.chain) {
-                    let isValid = await block.validateBlock();
+                    let isValid = await block.validate();
                     if(isValid) {
                         let validating = self.validateBlock(block);
                         if(validating !== null) {
