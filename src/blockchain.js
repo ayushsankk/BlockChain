@@ -95,7 +95,7 @@ class Blockchain {
     requestMessageOwnershipVerification(address) {
         return new Promise((resolve) => {
             let time = parseInt(new Date().getTime().toString().slice(0, -3));
-            let message = address + time + "starRegistry";
+            let message = address + ":" + time + ":" + "starRegistry";
             resolve(message);
         });
     }
@@ -229,6 +229,9 @@ class Blockchain {
     }
 
     async validateBlock(block) {
+        if(block.height == 0){
+            return null;
+        }
         let previousBlock = await this.getBlockByHeight(block.height - 1);
         if(this.previousBlock.hash !== block.previousBlockHash && block.previousBlockHash !== null) {
             return 'Chain broken at height' + block.height;
